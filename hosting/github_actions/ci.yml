@@ -1,0 +1,82 @@
+# GitHub Actions workflow for the Keypad Door Lock v2 project.
+#
+# What this does: every push and pull request gets two independent ship
+# gates, since there's no way to flash real hardware inside a CI runner:
+#
+#   1. sim-tests   -- the full pytest suite (42 tests) against doorlock_sim,
+#                      then the 12-scenario red-team suite standalone, same
+#                      as sim/REDTEAM_REPORT.md.
+#   2. firmware-compile -- installs the ESP32 Arduino core and every library
+#                      the firmware needs, then runs `arduino-cli compile`
+#                      against the real firmware. This can't prove the
+#                      firmware behaves correctly on real hardware, but it
+#                      DOES prove it still builds -- which is the largest
+#                      class of "I broke it and didn't notice" regression
+#                      CI can catch without a physical board attached.
+#
+# WHERE THIS FILE GOES: copy it to ".github/workflows/ci.yml" at the ROOT of
+# your repo (the repo root is this project folder,
+# hardware/11-keypad-door-lock-v2/, the one that contains
+# build_from_scratch/, knowledge/, notebooks/, labs/, hosting/).
+
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  sim-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: build_from_scratch/sim
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install doorlock_sim
+        run: pip install -e ".[dev]"
+
+      - name: Run the unit tests
+        run: pytest -v
+
+      # Same 12 scenarios as REDTEAM_REPORT.md, run fresh and checked against
+      # exit code -- doorlock_sim.cli.main() returns 1 if any scenario fails.
+      - name: Run the red-team suite (ship gate)
+        run: python -m doorlock_sim --redteam
+
+  firmware-compile:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Install arduino-cli
+        uses: arduino/setup-arduino-cli@v2
+
+      - name: Add the ESP32 board index and install the core
+        run: |
+          arduino-cli config init
+          arduino-cli config set board_manager.additional_urls https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+          arduino-cli core update-index
+          arduino-cli core install esp32:esp32
+
+      - name: Install the required libraries
+        run: |
+          arduino-cli lib install "Keypad" "ESP32Servo" "Adafruit SSD1306" "Adafruit GFX Library" "PubSubClient" "ArduinoJson"
+
+      # secrets.h is gitignored on purpose (see build_from_scratch/.gitignore) --
+      # CI only needs SOMETHING that compiles, not real WiFi/MQTT credentials.
+      - name: Provide a placeholder secrets.h (compile-only, no real credentials)
+        run: cp build_from_scratch/firmware/keypad_door_lock/secrets.h.example build_from_scratch/firmware/keypad_door_lock/secrets.h
+
+      - name: Compile the firmware
+        run: arduino-cli compile --fqbn esp32:esp32:esp32 build_from_scratch/firmware/keypad_door_lock

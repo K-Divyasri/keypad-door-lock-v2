@@ -1,0 +1,29 @@
+# pyproject.toml describes the project. It lets you run `pip install -e .`
+# and get `doorlock-sim` as a command, and it's where pytest reads its settings.
+
+[project]
+name = "doorlock-sim"
+version = "0.1.0"
+description = "Pure-Python twin of the keypad door lock firmware -- same state machine, no breadboard required."
+readme = "../README.md"
+requires-python = ">=3.10"
+dependencies = []
+
+[project.optional-dependencies]
+# Only needed for bridge.py (putting the simulator on a real MQTT broker).
+mqtt = ["paho-mqtt>=1.6"]
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+doorlock-sim = "doorlock_sim.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["doorlock_sim"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

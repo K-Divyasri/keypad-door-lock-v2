@@ -1,0 +1,8 @@
+# The simulator tab and red-team tab need nothing but doorlock_sim itself
+# (pure standard library) plus these two:
+streamlit>=1.30
+pandas>=2.0
+
+# Optional -- only for the "Live device" tab (a real MQTT connection).
+# Safe to install; the other two tabs work without it.
+paho-mqtt>=1.6

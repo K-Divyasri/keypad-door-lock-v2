@@ -1,0 +1,9 @@
+# Core -- the FSM, keypad, servo math, events, audit log, and red-team suite
+# need nothing beyond the standard library. This file exists for the two
+# optional pieces below.
+
+# Tests.
+pytest>=8.0
+
+# Optional -- only for bridge.py (putting the simulator on a real MQTT broker).
+paho-mqtt>=1.6
