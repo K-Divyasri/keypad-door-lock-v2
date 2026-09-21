@@ -15,9 +15,9 @@ Do them in that order. A repo with green CI and a working simulator is
 worth having even before you've soldered anything.
 
 Everything below assumes you're working from
-`hardware/11-keypad-door-lock-v2/` -- the folder containing `knowledge/`,
-`notebooks/`, `labs/`, `build_from_scratch/`, and this `hosting/` folder.
-That whole project folder is what becomes the GitHub repo.
+the repo root -- the folder containing `firmware/`,
+`sim/`, `webapp/`, `wiring/`, and this `hosting/` folder.
+That whole folder is what becomes the GitHub repo.
 
 ---
 
@@ -30,7 +30,7 @@ you are. From here on this guide assumes `git --version` already works.
 
 ### 1a. Check what must never be committed
 
-Open `build_from_scratch/.gitignore` and confirm it has at least:
+Open `.gitignore` and confirm it has at least:
 
 ```
 firmware/keypad_door_lock/secrets.h
@@ -43,7 +43,7 @@ webapp/.env
 
 The line that matters most is `secrets.h`. If you ever flashed the real
 firmware, you put your real WiFi password into
-`build_from_scratch/firmware/keypad_door_lock/secrets.h`. That file is
+`firmware/keypad_door_lock/secrets.h`. That file is
 gitignored on purpose -- the repo ships `secrets.h.example` instead
 (variable names, no real values), and that's the one meant to be
 committed. **If a real `secrets.h` ever shows up in `git status`, stop and
@@ -51,8 +51,7 @@ fix your `.gitignore` before committing anything.**
 
 ### 1b. Init, commit, push
 
-From `hardware/11-keypad-door-lock-v2/` (the project root, one level above
-`build_from_scratch/`):
+From the repo root:
 
 ```powershell
 git init
@@ -80,8 +79,8 @@ git remote add origin https://github.com/YOURNAME/keypad-door-lock-v2.git
 git push -u origin main
 ```
 
-Refresh the repo page. You should see `knowledge/`, `notebooks/`, `labs/`,
-`build_from_scratch/`, `hosting/`, this project's `README.md`, and
+Refresh the repo page. You should see `firmware/`, `sim/`, `webapp/`,
+`wiring/`, `hosting/`, this project's `README.md`, and
 `.gitignore`.
 
 ---
@@ -149,9 +148,9 @@ needs nothing heavier than Python plus two optional pure-Python libraries
 2. Go to [Streamlit Community Cloud](https://docs.streamlit.io/deploy/streamlit-community-cloud)
    and sign in with GitHub.
 3. Click **New app**, pick your repo and the `main` branch, and set the
-   main file path to `build_from_scratch/webapp/app.py`.
+   main file path to `webapp/app.py`.
 4. Deploy. Streamlit Cloud installs
-   `build_from_scratch/webapp/requirements.txt` automatically and starts
+   `webapp/requirements.txt` automatically and starts
    the app.
 
 The "Try the simulator" and "Red-team report" tabs work immediately with
@@ -176,13 +175,13 @@ zero configuration. The "Live device" tab works too, the moment a visitor
    emoji: 🔐
    sdk: streamlit
    sdk_version: "1.58.0"
-   app_file: build_from_scratch/webapp/app.py
+   app_file: webapp/app.py
    pinned: false
    ---
    ```
 
 4. Commit and push. Hugging Face installs
-   `build_from_scratch/webapp/requirements.txt` and starts the app at
+   `webapp/requirements.txt` and starts the app at
    `app_file`.
 
 Either option needs zero secrets -- the simulator tab and red-team tab need
@@ -194,10 +193,10 @@ nothing at all, and the live-device tab only ever talks to the public
 ## Step 4 -- A note on the firmware: there's no "hosting" a physical lock
 
 Unlike the dashboard, the real firmware in
-`build_from_scratch/firmware/keypad_door_lock/` doesn't get deployed to a
+`firmware/keypad_door_lock/` doesn't get deployed to a
 server -- it gets **flashed** onto your specific, physical ESP32 board,
 following `01_setup_and_parts.md`'s Arduino toolchain setup and
-`build_from_scratch/wiring/ASSEMBLY.md`'s rung-by-rung bring-up order. What
+`wiring/ASSEMBLY.md`'s rung-by-rung bring-up order. What
 CI proves is narrower and still valuable: the firmware *compiles* against
 the real toolchain on every push. Proving it *works* on your specific board
 is bench work only you can do -- which is exactly why this project put so

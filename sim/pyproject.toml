@@ -5,7 +5,6 @@
 name = "doorlock-sim"
 version = "0.1.0"
 description = "Pure-Python twin of the keypad door lock firmware -- same state machine, no breadboard required."
-readme = "../README.md"
 requires-python = ">=3.10"
 dependencies = []
 

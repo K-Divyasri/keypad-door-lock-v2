@@ -15,9 +15,8 @@
 #                      CI can catch without a physical board attached.
 #
 # WHERE THIS FILE GOES: copy it to ".github/workflows/ci.yml" at the ROOT of
-# your repo (the repo root is this project folder,
-# hardware/11-keypad-door-lock-v2/, the one that contains
-# build_from_scratch/, knowledge/, notebooks/, labs/, hosting/).
+# your repo (the repo root is the folder that contains
+# firmware/, sim/, webapp/, wiring/, hosting/).
 
 name: CI
 
@@ -30,7 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: build_from_scratch/sim
+        working-directory: sim
 
     steps:
       - name: Check out the code
@@ -73,10 +72,10 @@ jobs:
         run: |
           arduino-cli lib install "Keypad" "ESP32Servo" "Adafruit SSD1306" "Adafruit GFX Library" "PubSubClient" "ArduinoJson"
 
-      # secrets.h is gitignored on purpose (see build_from_scratch/.gitignore) --
+      # secrets.h is gitignored on purpose (see .gitignore) --
       # CI only needs SOMETHING that compiles, not real WiFi/MQTT credentials.
       - name: Provide a placeholder secrets.h (compile-only, no real credentials)
-        run: cp build_from_scratch/firmware/keypad_door_lock/secrets.h.example build_from_scratch/firmware/keypad_door_lock/secrets.h
+        run: cp firmware/keypad_door_lock/secrets.h.example firmware/keypad_door_lock/secrets.h
 
       - name: Compile the firmware
-        run: arduino-cli compile --fqbn esp32:esp32:esp32 build_from_scratch/firmware/keypad_door_lock
+        run: arduino-cli compile --fqbn esp32:esp32:esp32 firmware/keypad_door_lock

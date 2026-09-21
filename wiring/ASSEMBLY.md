@@ -177,7 +177,7 @@ two purposes, a shared resource like I2C misconfigured) rather than in any
 one piece itself.
 
 Walk through the same script `doorlock_sim`'s demo runs
-(`python -m doorlock_sim --demo` in `build_from_scratch/sim/`, after
+(`python -m doorlock_sim --demo` in `sim/`, after
 installing it -- see that folder's README) against the real hardware: wrong
 PIN three times and confirm LOCKOUT, wait it out, enter the right PIN and
 confirm the bolt turns, trip the PIR while LOCKED and confirm ALARM, and

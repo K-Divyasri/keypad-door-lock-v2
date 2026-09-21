@@ -1,6 +1,6 @@
 """A terminal front-end for `LockFSM` -- press keys, watch state, no hardware required.
 
-Three ways to run it (from `build_from_scratch/sim/`, after `pip install -e .`):
+Three ways to run it (from `sim/`, after `pip install -e .`):
 
     python -m doorlock_sim                interactive: type digits + Enter,
                                            or one of the control words below
